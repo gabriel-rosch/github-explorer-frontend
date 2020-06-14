@@ -29,7 +29,7 @@ const User: React.FC = () => {
   useEffect(() => {
     api.get(`users/${params.login}/repos`,{
       headers: {
-        'Authorization': 'b56a473ab2d3c7fc3055278d0a77bdb923d84ed9',
+        'Authorization': localStorage.getItem('token')
       }
     }).then(response => {
       setRepositories(response.data);
@@ -37,7 +37,7 @@ const User: React.FC = () => {
 
     api.get(`users/${params.login}/details`, {
       headers: {
-        'Authorization': 'b56a473ab2d3c7fc3055278d0a77bdb923d84ed9',
+        'Authorization': localStorage.getItem('token')
       }
     }).then(response => {
       setUser(response.data);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { FiChevronRight } from 'react-icons/fi';
 import logo from '../../assests/suglogo.svg';
-import { Title, Users, customStyles} from './styles';
+import { Title, Users, ModalToken} from './styles';
 import api from '../../services/api';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
@@ -23,24 +23,26 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
       const authorization = localStorage.getItem('token')
       if(authorization) {
-          try {
-              api.get('/users', {
-                  headers: {
-                      'Authorization': authorization
-                  }
-              }).then(response => {
-                  setUsers(response.data.result);
-                  setNextPageUrl(response.data.next);
-              })
-          } catch (e) {
-              setIsOpen(true);
-          }
+          loadUsers(authorization);
       } else {
           setIsOpen(true);
       }
   }, []);
+  function loadUsers(authorization: string) {
+      api.get('/users', {
+          headers: {
+              'Authorization': authorization
+          }
+      }).then(response => {
+          setUsers(response.data.result);
+          setNextPageUrl(response.data.next);
+      }).catch(function(error) {
+          alert('Erro na autenticação do usuário');
+      });
+  }
   function saveToken() {
       localStorage.setItem('token',newToken);
+      loadUsers(newToken);
       setIsOpen(false);
   }
   return (
@@ -62,13 +64,12 @@ const Dashboard: React.FC = () => {
           </Link>
         ))}
       </Users>
-        <button onClick={()=>setIsOpen(true)}>Open Modal</button>
         <Modal
             isOpen={modalIsOpen}
-            style={customStyles}
+            style={ModalToken}
             contentLabel="Example Modal"
         >
-            <form onSubmit={saveToken}>
+            <form className='form-modal' onSubmit={saveToken}>
                 <h2>Insira o token de autenticação do gitHub</h2>
                 <input
                     placeholder='Token'

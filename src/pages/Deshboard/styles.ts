@@ -54,7 +54,8 @@ export const Users = styled.div`
     }
   }
 `;
-export const customStyles = {
+
+export const ModalToken = {
     content : {
         top                   : '50%',
         left                  : '50%',
@@ -62,5 +63,5 @@ export const customStyles = {
         bottom                : 'auto',
         marginRight           : '-50%',
         transform             : 'translate(-50%, -50%)'
-    }
+    },
 };
