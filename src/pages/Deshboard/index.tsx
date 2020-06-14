@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-import { FiChevronRight } from 'react-icons/fi';
+import { FiChevronRight, FiChevronLeft} from 'react-icons/fi';
 import logo from '../../assests/suglogo.svg';
-import { Title, Users, ModalToken} from './styles';
+import { Users, ModalToken, Header} from './styles';
 import api from '../../services/api';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
@@ -16,39 +16,47 @@ interface User {
 
 const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [nextPageUrl, setNextPageUrl] = useState<User[]>([]);
+  const [nextPageQuery, setNextPageQuery] = useState('');
   const [modalIsOpen,setIsOpen] = React.useState(false);
   const [newToken,setNewToken] = React.useState('');
 
   useEffect(() => {
       const authorization = localStorage.getItem('token')
       if(authorization) {
-          loadUsers(authorization);
+          loadUsers('');
       } else {
           setIsOpen(true);
       }
   }, []);
-  function loadUsers(authorization: string) {
-      api.get('/users', {
+  function loadUsers(params: string) {
+      api.get(`/users${params}`, {
           headers: {
-              'Authorization': authorization
+              'Authorization': localStorage.getItem('token')
           }
       }).then(response => {
           setUsers(response.data.result);
-          setNextPageUrl(response.data.next);
+          setNextPageQuery(response.data.nextPageQuery);
       }).catch(function(error) {
-          alert('Erro na autenticação do usuário');
+          alert('Erro ao carregar usuarios verifique suas credenciais.');
       });
   }
   function saveToken() {
       localStorage.setItem('token',newToken);
-      loadUsers(newToken);
+      loadUsers('');
       setIsOpen(false);
   }
   return (
     <>
       <img src={logo} alt="Github explorer" />
-      <Title>Explore perfis no Github</Title>
+      <Header>
+          <h1>Explore perfis no Github</h1>
+          <button>
+              <FiChevronLeft size={40}/>
+          </button>
+          <button onClick={()=>loadUsers(nextPageQuery)}>
+              <FiChevronRight size={40}/>
+          </button>
+      </Header>
       <Users>
         {users.map((user) => (
           <Link key={user.id} to={`/user/${user.login}`}>

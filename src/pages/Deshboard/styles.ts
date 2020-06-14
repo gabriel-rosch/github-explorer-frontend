@@ -1,11 +1,25 @@
 import styled from 'styled-components';
 
-export const Title = styled.h1`
+export const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  margin-right: 220px;
+  align-items: center;
   margin-top: 60px;
-  color: #3a3a3a;
-  line-height: 56px;
-  font-size: 48px;
-  max-width: 700px;
+  h1 {
+      color: #3a3a3a;
+      line-height: 56px;
+      font-size: 48px;
+      max-width: 520px;
+  }
+  button {
+    background-color: #fff;
+    border-radius: 5px;
+    height: 90px;
+    width: 60px;
+    text-decoration: none;
+    border: none;
+  }
 `;
 
 export const Users = styled.div`
