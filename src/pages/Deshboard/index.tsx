@@ -7,16 +7,21 @@ import api from '../../services/api';
 import { Link } from 'react-router-dom';
 import Modal from 'react-modal';
 Modal.setAppElement('#root')
+
 interface User {
   id: number;
   login: string;
   avatar_url: string;
 }
-
+interface Paginarion {
+    nextPageUrl: string,
+    backPageUrl: string
+}
 
 const Dashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [nextPageQuery, setNextPageQuery] = useState('');
+  const [pagination, setPagination] = useState<Paginarion | null>(null);
+  const [page, setPage] = useState(1);
   const [modalIsOpen,setIsOpen] = React.useState(false);
   const [newToken,setNewToken] = React.useState('');
 
@@ -28,14 +33,16 @@ const Dashboard: React.FC = () => {
           setIsOpen(true);
       }
   }, []);
-  function loadUsers(params: string) {
-      api.get(`/users${params}`, {
+  function loadUsers(url: string) {
+      api.get(url ? url :`/users`, {
           headers: {
               'Authorization': localStorage.getItem('token')
           }
       }).then(response => {
-          setUsers(response.data.result);
-          setNextPageQuery(response.data.nextPageQuery);
+          if(response.data.result.length) {
+              setUsers(response.data.result);
+              setPagination(response.data.pagination);
+          }
       }).catch(function(error) {
           alert('Erro ao carregar usuarios verifique suas credenciais.');
       });
@@ -50,10 +57,10 @@ const Dashboard: React.FC = () => {
       <img src={logo} alt="Github explorer" />
       <Header>
           <h1>Explore perfis no Github</h1>
-          <button>
+          <button onClick={()=>loadUsers(pagination ? pagination.backPageUrl : '')}>
               <FiChevronLeft size={40}/>
           </button>
-          <button onClick={()=>loadUsers(nextPageQuery)}>
+          <button onClick={()=>loadUsers(pagination ? pagination.nextPageUrl : '')}>
               <FiChevronRight size={40}/>
           </button>
       </Header>
